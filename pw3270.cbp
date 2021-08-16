@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="pw3270" />
+		<Option makefile_is_custom="1" />
+		<Option execution_dir="." />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output=".bin/Debug/pw3270" prefix_auto="1" extension_auto="1" />
+				<Option object_output=".obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Option use_console_runner="0" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-DDEBUG=1" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output=".bin/Release/pw3270" prefix_auto="1" extension_auto="1" />
+				<Option object_output=".obj/Release/" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="`pkg-config gtk+-3.0 lib3270 --cflags`" />
+			<Add directory="src/include" />
+		</Compiler>
+		<Linker>
+			<Add option="`pkg-config gtk+-3.0 lib3270 --libs`" />
+		</Linker>
+		<Unit filename="Makefile.in" />
+		<Unit filename="configure.ac" />
+		<Unit filename="schemas/linux/application.gschema.xml.in" />
+		<Unit filename="src/include/pw3270.h" />
+		<Unit filename="src/include/pw3270/actions.h" />
+		<Unit filename="src/include/pw3270/application.h" />
+		<Unit filename="src/include/pw3270/settings.h" />
+		<Unit filename="src/include/pw3270/toolbar.h" />
+		<Unit filename="src/include/pw3270/window.h" />
+		<Unit filename="src/main/main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/main/placeholders.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/main/private.h" />
+		<Unit filename="src/main/tools.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/objects/actions/abstract.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/objects/actions/button.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/objects/actions/clipboard.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/objects/actions/dialog.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/objects/actions/print.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/objects/actions/private.h" />
+		<Unit filename="src/objects/actions/save.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/objects/actions/simple.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/objects/actions/tools.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/objects/actions/view.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/objects/actions/window.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/objects/application/actions/about.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/objects/application/actions/open.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/objects/application/actions/preferences.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/objects/application/actions/window.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/objects/application/application.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/objects/application/open.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/objects/application/private.h" />
+		<Unit filename="src/objects/linux/savedesktopicon.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/objects/settings/dialog.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/objects/settings/widget.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/objects/toolbar/actions.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/objects/toolbar/private.h" />
+		<Unit filename="src/objects/toolbar/settings.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/objects/toolbar/toolbar.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/objects/window/actions/close.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/objects/window/actions/connect.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/objects/window/actions/filetransfer.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/objects/window/actions/hostproperties.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/objects/window/actions/sessionproperties.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/objects/window/actions/setcolors.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/objects/window/header.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/objects/window/page.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/objects/window/private.h" />
+		<Unit filename="src/objects/window/terminal.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/objects/window/tools.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/objects/window/window.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/objects/windows/savedesktopicon.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="ui/application.xml" />
+		<Unit filename="ui/window.xml" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+			<envvars set="default" />
+			<DoxyBlocks>
+				<comment_style block="0" line="0" />
+				<doxyfile_project />
+				<doxyfile_build />
+				<doxyfile_warnings />
+				<doxyfile_output />
+				<doxyfile_dot />
+				<general />
+			</DoxyBlocks>
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

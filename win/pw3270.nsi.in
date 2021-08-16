@@ -1,0 +1,435 @@
+#
+# "Software pw3270, desenvolvido com base nos códigos fontes do WC3270  e X3270
+# (Paul Mattes Paul.Mattes@usa.net), de emulação de terminal 3270 para acesso a
+# aplicativos mainframe. Registro no INPI sob o nome G3270.
+#
+# Copyright (C) <2008> <Banco do Brasil S.A.>
+#
+# Este programa é software livre. Você pode redistribuí-lo e/ou modificá-lo sob
+# os termos da GPL v.2 - Licença Pública Geral  GNU,  conforme  publicado  pela
+# Free Software Foundation.
+#
+# Este programa é distribuído na expectativa de  ser  útil,  mas  SEM  QUALQUER
+# GARANTIA; sem mesmo a garantia implícita de COMERCIALIZAÇÃO ou  de  ADEQUAÇÃO
+# A QUALQUER PROPÓSITO EM PARTICULAR. Consulte a Licença Pública Geral GNU para
+# obter mais detalhes.
+#
+# Você deve ter recebido uma cópia da Licença Pública Geral GNU junto com este
+# programa;  se  não, escreva para a Free Software Foundation, Inc., 59 Temple
+# Place, Suite 330, Boston, MA, 02111-1307, USA
+#
+# Contatos:
+#
+# perry.werneck@gmail.com	(Alexandre Perry de Souza Werneck)
+# erico.mendonca@gmail.com	(Erico Mascarenhas de Mendonça)
+#
+
+!include "MUI2.nsh"
+!include "x64.nsh"
+!include "FileFunc.nsh"
+!include "LogicLib.nsh"
+!include "winmessages.nsh"
+
+Name "@PRODUCT_NAME@"
+Caption "@PRODUCT_NAME@ - @PACKAGE_DESCRIPTION@"
+!ifdef WITHGTK
+outfile "@PRODUCT_NAME@-@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@.@PACKAGE_MAJOR_RELEASE@.@PACKAGE_MINOR_RELEASE@-gtk-@GTK_MODVERSION@-@host_cpu@.exe"
+!else
+outfile "@PRODUCT_NAME@-@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@.@PACKAGE_MAJOR_RELEASE@.@PACKAGE_MINOR_RELEASE@-requires-gtk-@GTK_MODVERSION@-@host_cpu@.exe"
+!endif
+
+XPStyle on
+
+installDir "$@PROGRAMFILES@\@PRODUCT_NAME@"
+
+#define the installer icon
+!define MUI_ICON "@PACKAGE@.ico"
+!define MUI_UNICON "@PACKAGE@.ico"
+icon "@PACKAGE@.ico"
+
+# Get installation folder from registry if available
+InstallDirRegKey HKLM "Software\@PRODUCT_NAME@" "InstallLocation"
+
+RequestExecutionLevel admin
+
+# Properties
+VIProductVersion "@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@.@PACKAGE_MAJOR_RELEASE@.@PACKAGE_MINOR_RELEASE@"
+VIFileVersion "@WIN32_VERSION@"
+
+# Reference: https://nsis.sourceforge.io/Reference/VIAddVersionKey
+VIAddVersionKey "ProductVersion" "@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@.@PACKAGE_MAJOR_RELEASE@.@PACKAGE_MINOR_RELEASE@"
+VIAddVersionKey "FileVersion" "@WIN32_VERSION@"
+
+VIAddVersionKey "ProductName" "@PRODUCT_NAME@"
+VIAddVersionKey "FileDescription" "@PACKAGE_DESCRIPTION@"
+VIAddVersionKey "LegalCopyright" "(C) 2017 Banco do Brasil S/A. All Rights Reserved"
+# VIAddVersionKey "PrivateBuild" ""
+
+# Interface
+
+!define MUI_ABORTWARNING
+# !insertmacro MUI_PAGE_WELCOME
+!insertmacro MUI_PAGE_LICENSE "LICENSE"
+!insertmacro MUI_PAGE_COMPONENTS
+!insertmacro MUI_PAGE_DIRECTORY
+!insertmacro MUI_PAGE_INSTFILES
+
+# !insertmacro MUI_UNPAGE_WELCOME
+!insertmacro MUI_UNPAGE_CONFIRM
+!insertmacro MUI_UNPAGE_INSTFILES
+# !insertmacro MUI_UNPAGE_FINISH
+
+# Languages
+!insertmacro MUI_LANGUAGE "English"
+
+# Section scripts
+!include Sections.nsh
+
+# default section
+SubSection "@PRODUCT_NAME@" SecMain
+
+	Section "Core" SecCore
+
+		SetRegView @WINARCH@
+		${DisableX64FSRedirection}
+
+		# define the output path for this file
+		setOutPath $INSTDIR
+		SetShellVarContext all
+
+		createShortCut "$SMPROGRAMS\@PRODUCT_NAME@.lnk" "$INSTDIR\@PRODUCT_NAME@.exe"
+		createShortCut "$DESKTOP\@PRODUCT_NAME@.lnk" "$INSTDIR\@PRODUCT_NAME@.exe"
+
+		# Binary files
+		file "/oname=$INSTDIR\@PRODUCT_NAME@.exe"			"@PACKAGE@.exe"
+		file "/oname=$INSTDIR\@PRODUCT_NAME@.ico"			"@PACKAGE@.ico"
+		file "/oname=$INSTDIR\lib@LIBRARY_NAME@.dll"			"lib@LIBRARY_NAME@.dll"
+		file "/oname=$INSTDIR\libv3270.dll"				"libv3270.dll"
+
+		# Configuration files
+		file "/oname=$INSTDIR\@PRODUCT_NAME@-logo.png"			"@PRODUCT_NAME@\@PRODUCT_NAME@-logo.png"
+		file "/oname=$INSTDIR\@PRODUCT_NAME@.png"			"@PRODUCT_NAME@\@PRODUCT_NAME@.png"
+		file "/oname=$INSTDIR\colors.conf"				"@PRODUCT_NAME@\colors.conf"
+
+		# Documentation files
+		file "/oname=$INSTDIR\AUTHORS"					"AUTHORS"
+		file "/oname=$INSTDIR\LICENSE"					"LICENSE"
+
+		# Misc folders
+		CreateDirectory "$INSTDIR\certs"
+		CreateDirectory "$INSTDIR\plugins"
+
+		# UI definition files
+		CreateDirectory "$INSTDIR\ui"
+		file "/oname=$INSTDIR\ui\application.xml" 	"@PRODUCT_NAME@\ui\application.xml"
+		file "/oname=$INSTDIR\ui\window.xml" 		"@PRODUCT_NAME@\ui\window.xml"
+
+		# Charset definition files
+		CreateDirectory "$INSTDIR\remap"
+		file "/oname=$INSTDIR\remap\bracket.xml" 	"@PRODUCT_NAME@\remap\bracket.xml"
+
+		# Locale files
+		CreateDirectory "$INSTDIR\locale\pt_BR\LC_MESSAGES"
+		file "/oname=$INSTDIR\locale\pt_BR\LC_MESSAGES\@PACKAGE@.mo"		"locale\pt_BR\LC_MESSAGES\@PACKAGE@.mo"
+		file "/oname=$INSTDIR\locale\pt_BR\LC_MESSAGES\lib@LIBRARY_NAME@.mo"	"locale\pt_BR\LC_MESSAGES\lib@LIBRARY_NAME@.mo"
+		file "/oname=$INSTDIR\locale\pt_BR\LC_MESSAGES\libv3270.mo"		"locale\pt_BR\LC_MESSAGES\libv3270.mo"
+
+		# define uninstaller name
+		SetRegView 32
+
+		writeUninstaller $INSTDIR\uninstall.exe
+
+		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\@PRODUCT_NAME@" \
+			         "DisplayName" "@PRODUCT_NAME@ - @PACKAGE_DESCRIPTION@"
+		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\@PRODUCT_NAME@" \
+			         "DisplayIcon" "$INSTDIR\@PRODUCT_NAME@.ico"
+		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\@PRODUCT_NAME@" \
+			         "DisplayVersion" "@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@.@PACKAGE_MAJOR_RELEASE@.@PACKAGE_MINOR_RELEASE@"
+
+		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\@PRODUCT_NAME@" \
+			         "UninstallString" "$INSTDIR\uninstall.exe"
+		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\@PRODUCT_NAME@" \
+			         "InstallLocation" "$INSTDIR"
+		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\@PRODUCT_NAME@" \
+			         "NoModify" "1"
+		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\@PRODUCT_NAME@" \
+			         "NoRepair" "1"
+
+		# Default settings
+		SetRegView @WINARCH@
+
+		# Required for IPC Library.
+		WriteRegStr 	HKLM	"Software\@PRODUCT_NAME@"			"InstallLocation"	"$INSTDIR"
+
+		# Customized options
+
+
+	sectionEnd
+
+!ifdef WITHCERTS
+	Section "SSL Certificates" SSLCerts
+		setOutPath $INSTDIR\certs
+		file /r "sslcerts\*.*"
+	sectionEnd
+!endif
+
+	SubSection "Plugins" SecPLugin
+
+		Section /o "Remote control" IPCPlugin
+
+			setOutPath $INSTDIR
+
+			${DisableX64FSRedirection}
+
+			CreateDirectory "$INSTDIR\plugins"
+			file "/oname=$INSTDIR\plugins\ipcserver.dll"			"@PRODUCT_NAME@-plugins\ipcserver.dll"
+
+			CreateDirectory "$INSTDIR\locale\pt_BR\LC_MESSAGES"
+			file "/oname=$INSTDIR\locale\pt_BR\LC_MESSAGES\libipc3270.mo"	"locale\pt_BR\LC_MESSAGES\libipc3270.mo"
+
+			${@NSISREDIR@}
+			file "/oname=$SYSDIR\libipc3270.dll"				"libipc3270.dll"
+
+		sectionEnd
+
+	SubSectionEnd
+
+!ifdef WITHEXTRAS
+	SubSection "Extra modules" Languages
+
+!ifdef WITHLIBHLLAPI
+		Section /o "HLLAPI" HLLAPIBinding
+
+			${@NSISREDIR@}
+
+			# Install HLLAPI connector
+			file "/oname=$SYSDIR\hllapi.dll"		"libhllapi.dll"
+
+			# Install with "lib" prefix for compatibility.
+			file "/oname=$SYSDIR\libhllapi.dll"		"libhllapi.dll"
+
+		SectionEnd
+!endif
+
+!ifdef WITHMONO-TN3270
+		Section /o ".NET" DOTNET
+
+			CreateDirectory "$INSTDIR\dotnet"
+
+			${DisableX64FSRedirection}
+			file "/oname=$INSTDIR\dotnet\tn3270.dll"	"mono/lib/tn3270-5.2/tn3270.dll"
+			file "/oname=$INSTDIR\dotnet\tn3270.xml"	"mono/gapi-2.0/tn3270/tn3270.xml"
+
+			${@NSISREDIR@}
+			file "/oname=$SYSDIR\mono-tn3270.dll"		"mono-tn3270.dll"
+
+		SectionEnd
+!endif
+
+	SubSectionEnd
+!endif
+
+!ifdef WITHSDK
+	Section /o "Software Development Kit" SDK
+
+		setOutPath $INSTDIR\sdk\include
+		file /r "include\*.*"
+
+		CreateDirectory "$INSTDIR\sdk"
+		CreateDirectory "$INSTDIR\sdk\def"
+		CreateDirectory "$INSTDIR\sdk\lib"
+
+		file "/oname=$INSTDIR\sdk\def\lib@LIBRARY_NAME@.def"	"@PRODUCT_NAME@\def\lib@LIBRARY_NAME@.def"
+		file "/oname=$INSTDIR\sdk\lib\lib3270.dll.a"		"lib@LIBRARY_NAME@.dll.a"
+		file "/oname=$INSTDIR\sdk\lib\lib3270.delayed.a"	"lib@LIBRARY_NAME@.delayed.a"
+		file "/oname=$INSTDIR\sdk\lib\lib3270.static.a"		"lib@LIBRARY_NAME@.static.a"
+
+		file "/oname=$INSTDIR\sdk\lib3270.mak"			"@PRODUCT_NAME@\def\lib3270.mak"
+
+		file "/oname=$INSTDIR\sdk\def\libv3270.def"		"@PRODUCT_NAME@\def\libv3270.def"
+		file "/oname=$INSTDIR\sdk\lib\libv3270.dll.a"		"libv3270.dll.a"
+
+		file "/oname=$INSTDIR\sdk\def\libipc3270.def"		"@PRODUCT_NAME@\def\libipc3270.def"
+		file "/oname=$INSTDIR\sdk\lib\libipc3270.dll.a"		"libipc3270.dll.a"
+		file "/oname=$INSTDIR\sdk\lib\libipc3270.static.a"	"libipc3270.static.a"
+
+		file "/oname=$INSTDIR\sdk\def\libhllapi.def"		"@PRODUCT_NAME@\def\libhllapi.def"
+		file "/oname=$INSTDIR\sdk\lib\libhllapi.dll.a"		"libhllapi.dll.a"
+
+		SetRegView @WINARCH@
+		WriteRegExpandStr HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Environment" "PW3270_SDK_PATH" "$INSTDIR\sdk"
+		SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
+
+	SectionEnd
+!endif
+
+SubSectionEnd
+
+
+!ifdef WITHGTK
+Section /o "GTK+ Runtime" SecGTK
+
+	setOutPath $INSTDIR
+	file /r "runtime\*.*"
+
+SectionEnd
+!endif
+
+Section "Uninstall"
+
+	# Always delete uninstaller first
+	delete $INSTDIR\uninstaller.exe
+
+	# Set SMPROGRAMS and DESKTOP path
+	SetShellVarContext all
+
+	# now delete installed files
+	delete $INSTDIR\@PRODUCT_NAME@.exe
+	delete $SMPROGRAMS\@PRODUCT_NAME@.lnk
+	delete $DESKTOP\@PRODUCT_NAME@.lnk
+
+	RMDir /r "$INSTDIR\locale"
+	RMDir /r "$INSTDIR\share"
+	RMDir /r "$INSTDIR\etc"
+	RMDir /r "$INSTDIR\plugins"
+	RMDir /r "$INSTDIR\sdk"
+	RMDir /r "$INSTDIR\gtk2-runtime"
+
+
+	# Delete all files
+	delete "$INSTDIR\*.dll"
+
+	# Remove registry
+	SetRegView 32
+	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\@PRODUCT_NAME@"
+	DeleteRegKey HKLM "Software\@PRODUCT_NAME@"
+	
+	SetRegView @WINARCH@
+	DeleteRegKey HKLM "Software\@PRODUCT_NAME@"
+	DeleteRegValue HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Environment" "PW3270_SDK_PATH"
+	SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
+
+	DeleteRegKey HKLM "Software\GSettings\apps\@PACKAGE_NAME@\@PRODUCT_NAME@"
+
+	# Delete System libraries
+	${@NSISREDIR@}
+
+	delete $SYSDIR\libipc3270.dll
+
+!ifdef WITHLIBHLLAPI
+	delete $SYSDIR\libhllapi.dll
+	delete $SYSDIR\hllapi.dll
+!endif
+
+!ifdef WITHMONO-TN3270
+	delete $SYSDIR\mono-tn3270.dll
+!endif
+
+	RMDir /r "$INSTDIR"
+
+SectionEnd
+
+Function .onInit
+
+	#---[ Check DOTNET Command line option ]0-------------------------------------------------------------
+
+!ifdef WITHMONO-TN3270
+	Push $0
+
+	${GetParameters} $R0
+	ClearErrors
+	${GetOptions} $R0 /DOTNET= $0
+
+	${if} $0 == "NO"
+
+		SectionGetFlags ${DOTNET} $0
+		IntOp $0 $0 & ${SECTION_OFF}
+		SectionSetFlags ${DOTNET} $0
+
+	${else}
+
+		SectionGetFlags ${DOTNET} $0
+		IntOp $0 $0 | ${SF_SELECTED}
+		SectionSetFlags ${DOTNET} $0
+
+		SectionGetFlags ${IPCPlugin} $0
+		IntOp $0 $0 | ${SF_SELECTED}
+		SectionSetFlags ${IPCPlugin} $0
+
+	${EndIf}
+
+	Pop $0
+!endif
+
+	#---[ Check HLLAPI Command line option ]-------------------------------------------------------------
+
+!ifdef WITHLIBHLLAPI
+
+	Push $0
+
+	${GetParameters} $R0
+	ClearErrors
+	${GetOptions} $R0 /HLLAPI= $0
+
+	${if} $0 == "NO"
+
+		SectionGetFlags ${HLLAPIBinding} $0
+		IntOp $0 $0 & ${SECTION_OFF}
+		SectionSetFlags ${HLLAPIBinding} $0
+
+	${else}
+
+		SectionGetFlags ${HLLAPIBinding} $0
+		IntOp $0 $0 | ${SF_SELECTED}
+		SectionSetFlags ${HLLAPIBinding} $0
+
+		SectionGetFlags ${IPCPlugin} $0
+		IntOp $0 $0 | ${SF_SELECTED}
+		SectionSetFlags ${IPCPlugin} $0
+
+	${EndIf}
+
+	Pop $0
+
+!endif
+
+
+	#---[ Check for GTK runtime ]------------------------------------------------------------------------
+
+!ifdef WITHGTK
+
+	SetRegView @WINARCH@
+
+	ReadRegStr $4 HKLM "Software\gtkwin\@GTK_MODVERSION@" "path"
+
+	${if} $4 == ""
+
+		SectionGetFlags ${SecGTK} $0
+		IntOp $0 $0 | ${SF_SELECTED}
+		SectionSetFlags ${SecGTK} $0
+
+	${Else}
+
+		${if} ${FileExists} `$4\*.*`
+
+			SectionGetFlags ${SecGTK}  $0
+			IntOp $0 $0 & ${SECTION_OFF}
+			SectionSetFlags ${SecGTK}  $0
+
+		${Else}
+
+			SectionGetFlags ${SecGTK}  $0
+			IntOp $0 $0 | ${SF_SELECTED}
+			SectionSetFlags ${SecGTK}  $0
+
+		${EndIf}
+
+	${EndIf}
+
+!endif
+
+
+FunctionEnd
+
+
+
